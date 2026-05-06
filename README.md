@@ -1,3 +1,6 @@
+<img width="625" height="426" alt="image" src="https://github.com/user-attachments/assets/3e1e115a-3c85-4940-b9fd-54bf5a31651b" />
+
+
 # 🚀 Deploy a Dockerized Web App using CloudFormation
 
 This project demonstrates how to deploy a Dockerized Node.js application on AWS using CloudFormation.
