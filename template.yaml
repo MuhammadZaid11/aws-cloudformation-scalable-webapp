@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Docker Node App Deployment in us-east-1
+
+Parameters:
+  InstanceType:
+    Type: String
+    Default: t3.small
+
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Select your existing key pair
+
+Resources:
+
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow SSH and App Port
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          CidrIp: 0.0.0.0/0
+
+  MyEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+
+      ImageId: ami-0eb38b817b93460ac   
+
+      SecurityGroupIds:
+        - !Ref MySecurityGroup
+
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum update -y
+          yum install -y docker
+          systemctl start docker
+          systemctl enable docker
+          usermod -aG docker ec2-user
+
+          docker pull muhammadzaid673/node-crdt-app
+          docker run -d -p 3000:3000 muhammadzaid673/node-crdt-app
+
+Outputs:
+  WebsiteURL:
+    Value: !Sub "http://${MyEC2Instance.PublicIp}:3000"
